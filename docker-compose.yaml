@@ -1,0 +1,48 @@
+services:
+  app:
+    container_name: kube-news
+    image: sonnesen/kube-news
+    environment:
+      DB_DATABASE: testdb
+      DB_USERNAME: postgres
+      DB_PASSWORD: secret
+      DB_HOST: pgdatabase
+    ports:
+      - 8080:8080
+    networks:
+      - pg_network
+    depends_on:
+      - pgdatabase
+
+  pgdatabase:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: testdb
+    volumes:
+      - pg_data:/var/lib/postgresql/data"
+    #ports:
+    #  - "5432:5432"
+    networks:
+      - pg_network
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin@123
+    ports:
+      - "8180:80"
+    networks:
+      - pg_network
+    depends_on:
+      - pgdatabase
+
+networks:
+  pg_network:
+    driver: bridge
+
+volumes:
+  pg_data:
+    driver: local
